@@ -6,7 +6,7 @@ defmodule HunspellJson do
   @doc """
   parse generates the json from the affix and dictionary contents
   """
-  def parse do
-    :world
+  def parse(aff_contents, dic_contents) do
+    IO.puts(aff_contents)
   end
 end
