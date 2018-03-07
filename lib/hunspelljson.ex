@@ -3,7 +3,7 @@ defmodule HunspellJson do
   Generate a json file from a hunspell affix and dictionary file
   """
 
-  alias HunspellJson.AffParser
+  alias HunspellJson.{AffParser, DicParser}
 
   @doc """
   parse generates the json from the affix and dictionary contents
@@ -13,6 +13,8 @@ defmodule HunspellJson do
     |> AffParser.parse
     |> set_compound_rule_codes
     |> only_in_compound_flag
+    |> DicParser.parse(dic_contents)
+    |> IO.inspect
     # |> Poison.encode!
     # |> (&File.write("output.json", &1)).()
   end
