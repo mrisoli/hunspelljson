@@ -29,8 +29,8 @@ defmodule HunspellJson.CLI do
     with {:ok, aff_contents} <- File.read(aff_path),
          {:ok, dic_contents} <- File.read(dic_path)
     do
-      IO.puts("parsing " <> aff_path <> ".aff")
-      IO.puts("parsing " <> dic_path <> ".dic")
+      IO.puts("parsing " <> aff_path)
+      IO.puts("parsing " <> dic_path)
       HunspellJson.parse(aff_contents, dic_contents)
     else
       {:error, reason} -> IO.puts(reason)
