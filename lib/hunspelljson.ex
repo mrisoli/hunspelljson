@@ -14,7 +14,6 @@ defmodule HunspellJson do
     |> set_compound_rule_codes
     |> only_in_compound_flag
     |> DicParser.parse(dic_contents)
-    |> IO.inspect
     # |> Poison.encode!
     # |> (&File.write("output.json", &1)).()
   end
