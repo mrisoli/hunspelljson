@@ -5,11 +5,12 @@ defmodule HunspellJson.RuleCodeParser do
 
   def parse(_flag_set, nil), do: []
 
-  def parse(flag_set, text_codes) do
-    case flag_set["FLAG"] do
-      "long" -> Enum.chunk_every(String.graphemes(text_codes), 2)
-      "num" -> String.split(text_codes, ",")
-      nil -> String.graphemes(text_codes)
-    end
+  def parse(flag_set, text_codes), do: read_flag(text_codes, flag_set["FLAG"])
+
+  defp read_flag(text_codes, "long") do
+    Enum.chunk_every(String.graphemes(text_codes), 2)
   end
+
+  defp read_flag(text_codes, "num"), do: String.split(text_codes, ",")
+  defp read_flag(text_codes, nil), do: String.graphemes(text_codes)
 end

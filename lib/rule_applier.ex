@@ -16,7 +16,7 @@ defmodule HunspellJson.RuleApplier do
         rule_set,
         word,
         rule,
-        [new_word] ++ new_words,
+        new_words ++ [new_word],
         entries,
         entry[:continuationClasses]
       )
@@ -46,7 +46,7 @@ defmodule HunspellJson.RuleApplier do
     cont_rule = rule_set[:rules][cont_class]
     updated_words = case cont_rule do
       nil -> new_words
-      _ -> apply_rule_entries(rule_set, List.last(new_words), cont_rule) ++ new_words
+      _ -> new_words ++ apply_rule_entries(rule_set, List.last(new_words), cont_rule)
     end
     add_continuation_classes(
       rule_set,

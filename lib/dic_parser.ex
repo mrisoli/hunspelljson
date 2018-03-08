@@ -36,7 +36,7 @@ defmodule HunspellJson.DicParser do
     if Map.has_key?(rule_set[:dictionaryTable], word) do
       put_in(
         rule_set[:dictionaryTable][word],
-        rules ++ rule_set[:dictionaryTable][word]
+        rule_set[:dictionaryTable][word] ++ rules
       )
     else
       put_in(rule_set[:dictionaryTable][word], rules)
@@ -82,7 +82,7 @@ defmodule HunspellJson.DicParser do
       nil -> rule_set
       _ -> put_in(
         rule_set[:compoundRuleCodes][code],
-        [word] ++ rule_set[:compoundRuleCodes][code]
+        rule_set[:compoundRuleCodes][code] ++ [word]
       )
     end
   end

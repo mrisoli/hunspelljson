@@ -63,7 +63,7 @@ defmodule HunspellJson.AffParser do
     {
       put_in(
         rule_set[:replacementTable],
-        [replacement_entry] ++ rule_set[:replacementTable]
+        rule_set[:replacementTable] ++ [replacement_entry]
       ),
       data
     }
@@ -100,12 +100,12 @@ defmodule HunspellJson.AffParser do
     continuation_classes = RuleCodeParser.parse(rule_set[:flags], List.first(continuation))
     get_entries(
       {rule_set, data},
-      [%{
+      entries ++[%{
         add: if(add == "0", do: "", else: add),
         continuationClasses: continuation_classes,
         match: match,
         remove: remove
-      }] ++ entries,
+      }],
       num_entries - 1
     )
   end
@@ -127,7 +127,7 @@ defmodule HunspellJson.AffParser do
     |> String.split(~r/\s/)
     |> List.last
     |> (&handle_compound_rules({
-      put_in(rule_set[:compoundRules], [&1] ++ rule_set[:compoundRules]), data
+      put_in(rule_set[:compoundRules], rule_set[:compoundRules] ++ [&1]), data
     }, n - 1)).()
   end
 end
