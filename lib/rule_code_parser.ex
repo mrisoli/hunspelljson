@@ -3,7 +3,7 @@ defmodule HunspellJson.RuleCodeParser do
   parses rule codes based on addition characters
   """
 
-  def parse(_flag_set, []), do: []
+  def parse(_flag_set, nil), do: []
 
   def parse(flag_set, text_codes) do
     case flag_set["FLAG"] do

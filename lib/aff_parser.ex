@@ -63,7 +63,7 @@ defmodule HunspellJson.AffParser do
     {
       put_in(
         rule_set[:replacementTable],
-        rule_set[:replacementTable] ++ [replacement_entry]
+        [replacement_entry] ++ rule_set[:replacementTable]
       ),
       data
     }
@@ -77,7 +77,7 @@ defmodule HunspellJson.AffParser do
     # NEEDAFFIX
     # SET
 
-    {put_in(rule_set[:flags][rule_type], rule_data), data}
+    {put_in(rule_set[:flags][rule_type], Enum.join(rule_data, " ")), data}
   end
 
   defp handle_affix_rule({rule_set, [rule | data]}, rule_type, rule_data) do
@@ -97,17 +97,15 @@ defmodule HunspellJson.AffParser do
     [add | continuation] = String.split(addition_parts, "/")
     {_, match} = get_match(regex_to_match, rule_type)
     {_, remove} = get_remove_chars(remove_part, rule_type)
-    continuation_classes = RuleCodeParser.parse(rule_set[:flags], continuation)
+    continuation_classes = RuleCodeParser.parse(rule_set[:flags], List.first(continuation))
     get_entries(
       {rule_set, data},
-      entries ++ [%{
+      [%{
         add: if(add == "0", do: "", else: add),
-        continuationClasses: if(
-          length(continuation_classes) > 0, do: continuation_classes, else: nil
-        ),
+        continuationClasses: continuation_classes,
         match: match,
         remove: remove
-      }],
+      }] ++ entries,
       num_entries - 1
     )
   end
@@ -129,7 +127,7 @@ defmodule HunspellJson.AffParser do
     |> String.split(~r/\s/)
     |> List.last
     |> (&handle_compound_rules({
-      put_in(rule_set[:compoundRules], rule_set[:compoundRules] ++ [&1]), data
+      put_in(rule_set[:compoundRules], [&1] ++ rule_set[:compoundRules]), data
     }, n - 1)).()
   end
 end

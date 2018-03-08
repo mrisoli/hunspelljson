@@ -31,9 +31,22 @@ defmodule HunspellJson.CLI do
     do
       IO.puts("parsing " <> aff_path)
       IO.puts("parsing " <> dic_path)
-      HunspellJson.parse(aff_contents, dic_contents)
+      run(aff_contents, dic_contents)
     else
       {:error, reason} -> IO.puts(reason)
     end
+  end
+
+  defp run(aff_contents, dic_contents) do
+    fn -> HunspellJson.parse(aff_contents, dic_contents) end
+    |> measure
+  end
+
+  defp measure(function) do
+    function
+    |> :timer.tc
+    |> elem(0)
+    |> Kernel./(1_000_000)
+    |> IO.puts
   end
 end
