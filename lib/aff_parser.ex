@@ -97,10 +97,12 @@ defmodule HunspellJson.AffParser do
     [add | continuation] = String.split(addition_parts, "/")
     {_, match} = get_match(regex_to_match, rule_type)
     {_, remove} = get_remove_chars(remove_part, rule_type)
-    continuation_classes = RuleCodeParser.parse(rule_set[:flags], List.first(continuation))
+    continuation_classes = RuleCodeParser.parse(
+      rule_set[:flags], List.first(continuation)
+    )
     get_entries(
       {rule_set, data},
-      entries ++[%{
+      entries ++ [%{
         add: if(add == "0", do: "", else: add),
         continuationClasses: continuation_classes,
         match: match,

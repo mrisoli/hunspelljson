@@ -2,26 +2,33 @@ defmodule HunspellJson.RuleApplier do
   @moduledoc """
   recursively applies the rules to the given word
   """
-  def apply_rule_entries(rule_set, word, rule) do
-    apply_entries(rule_set, word, rule, [], rule[:entries])
+  def apply_rule_entries(word, rule, rules) do
+    apply_entries([], rule[:entries], word, rule, rules)
   end
 
-  defp apply_entries(rule_set, word, rule, new_words, []), do: new_words
-  defp apply_entries(rule_set, word, rule, new_words, [entry | entries]) do
-    if entry[:match] != nil and Regex.match?(entry[:match], word) do
+  defp apply_entries(new_words, [], _w, _r, _rules), do: new_words
+
+  defp apply_entries(new_words, [entry | entries], word, rule, rules) do
+    new_words
+    |> apply_match(entry[:match], entry, word, rule, rules)
+    |> apply_entries(entries, word, rule, rules)
+  end
+
+  defp apply_match(new_words, nil, _e, _w, _r, _rules), do: new_words
+
+  defp apply_match(new_words, match, entry, word, rule, rules) do
+    if Regex.match?(match, word) do
       new_word = word
-      |> remove_affix(entry[:remove])
-      |> add_affix(rule[:type], entry[:add])
-      add_continuation_classes(
-        rule_set,
-        word,
-        rule,
-        new_words ++ [new_word],
-        entries,
-        entry[:continuationClasses]
+                 |> remove_affix(entry[:remove])
+                 |> add_affix(rule[:type], entry[:add])
+      new_words ++ [new_word]
+      |> add_continuation(
+        entry[:continuationClasses],
+        rules,
+        new_word
       )
     else
-      apply_entries(rule_set, word, rule, new_words, entries)
+      new_words
     end
   end
 
@@ -31,30 +38,15 @@ defmodule HunspellJson.RuleApplier do
   defp add_affix(word, "SFX", add), do: word <> add
   defp add_affix(word, _, add), do: add <> word
 
-  defp add_continuation_classes(rule_set, word, rule, new_words, entries, []) do
-    apply_entries(rule_set, word, rule, new_words, entries)
+  defp add_continuation(new_words, [], rules, new_word), do: new_words
+
+  defp add_continuation(new_words, [c_class | classes], rules, new_word) do
+    add_c_rule(new_words, rules[c_class], new_word, rules)
   end
 
-  defp add_continuation_classes(
-    rule_set,
-    word,
-    rule,
-    new_words,
-    entries,
-    [cont_class | classes]
-  ) do
-    cont_rule = rule_set[:rules][cont_class]
-    updated_words = case cont_rule do
-      nil -> new_words
-      _ -> new_words ++ apply_rule_entries(rule_set, List.last(new_words), cont_rule)
-    end
-    add_continuation_classes(
-      rule_set,
-      word,
-      rule,
-      updated_words,
-      entries,
-      classes
-    )
+  defp add_c_rule(new_words, nil, _nw, _rules), do: new_words
+
+  defp add_c_rule(new_words, c_rule, new_word, rules) do
+    new_words ++ apply_rule_entries(new_word, c_rule, rules)
   end
 end
