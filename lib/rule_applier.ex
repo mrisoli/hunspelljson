@@ -14,22 +14,28 @@ defmodule HunspellJson.RuleApplier do
     |> apply_entries(entries, word, rule, rules)
   end
 
-  defp apply_match(new_words, nil, _e, _w, _r, _rules), do: new_words
+  defp apply_match(new_words, nil, entry, word, rule, rules) do
+    gen_new_words(new_words, entry, word, rule, rules)
+  end
 
   defp apply_match(new_words, match, entry, word, rule, rules) do
     if Regex.match?(match, word) do
-      new_word = word
-                 |> remove_affix(entry[:remove])
-                 |> add_affix(rule[:type], entry[:add])
-      new_words ++ [new_word]
-      |> add_continuation(
-        entry[:continuationClasses],
-        rules,
-        new_word
-      )
+      gen_new_words(new_words, entry, word, rule, rules)
     else
       new_words
     end
+  end
+
+  defp gen_new_words(new_words, entry, word, rule, rules) do
+    new_word = word
+               |> remove_affix(entry[:remove])
+               |> add_affix(rule[:type], entry[:add])
+    new_words ++ [new_word]
+    |> add_continuation(
+      entry[:continuationClasses],
+      rules,
+      new_word
+    )
   end
 
   defp remove_affix(word, nil), do: word
