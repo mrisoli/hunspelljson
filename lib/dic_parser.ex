@@ -44,9 +44,9 @@ defmodule HunspellJson.DicParser do
 
   defp affix_in_rule_codes_array(rule_set, word, rule_codes_array) do
     if Enum.member?(rule_codes_array, rule_set[:flags]["NEEDAFFIX"]) do
-      WordRuleParser.add_word(rule_set, word, rule_codes_array)
-    else
       rule_set
+    else
+      WordRuleParser.add_word(rule_set, word, rule_codes_array)
     end
   end
 

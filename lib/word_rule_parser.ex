@@ -5,14 +5,9 @@ defmodule HunspellJson.WordRuleParser do
   alias HunspellJson.RuleApplier
 
   def add_word(rule_set, word, rules) do
-    if Map.has_key?(rule_set[:dictionaryTable], word) do
-      put_in(
-        rule_set[:dictionaryTable][word],
-        [rule_set[:dictionaryTable][word], rules]
-      )
-    else
-      put_in(rule_set[:dictionaryTable][word], rules)
-    end
+    rule_set[:dictionaryTable]
+    |> Map.get(word, [])
+    |> (&put_in(rule_set[:dictionaryTable][word], &1 ++ rules)).()
   end
 
   def parse_rule_codes(rule_set, _word, []), do: rule_set
